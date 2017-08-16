@@ -5,6 +5,7 @@ var json_util = require('../util/json');
 var debug = require('../util/debug');
 var rules = json_util.loadJSON(null,"./rules/");
 var m = require('../messages');
+var allIssues = [];
 
 var htmlparser = require("htmlparser2");
 var request = require('then-request');
@@ -358,13 +359,19 @@ module.exports = {
 			    });
 		var query0 = "SELECT Id, Name, Markup from ApexPage";
 		debug.log('Sending query '+query0);
-		routedinfo.conn.query(query0, function(err, result) {
-					  if (err) { return debug.logError(err); routedinfo.handler(routedinfo); }
-					  else {
-							debug.log(result.totalSize + "pages found");
-							checkPages(result.records,routedinfo);
-					  }
-					});
+		var records = [];
+		routedinfo.conn.query(query0)
+			.on("record", function(record) {
+				records.push(record);
+			})
+			.on("end", function() {
+                checkPages(records, routedinfo);
+			})
+			.on("error", function(err) {
+                return debug.logError(err);
+                routedinfo.handler(routedinfo);
+            })
+			.run({ autoFetch: true});
 
 	},
 
@@ -375,14 +382,19 @@ module.exports = {
 			    });
 		var query0 = "SELECT Id, Name, Markup from ApexComponent";
 		debug.log('Sending query '+query0);
-		routedinfo.conn.query(query0, function(err, result) {
-					  if (err) { return debug.logError(err); routedinfo.handler(routedinfo); }
-					  else {
-							debug.log(result.totalSize + "components found");
-							checkPages(result.records,routedinfo);
-					  }
-					});
-
+        var records = [];
+        routedinfo.conn.query(query0)
+            .on("record", function(record) {
+                records.push(record);
+            })
+            .on("end", function() {
+                checkPages(records, routedinfo);
+            })
+            .on("error", function(err) {
+                return debug.logError(err);
+                routedinfo.handler(routedinfo);
+            })
+            .run({ autoFetch: true});
 	}
 
 }

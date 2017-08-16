@@ -1,7 +1,7 @@
 {
 	"name":"Window Location Href",
 	"type":"javascript",
-	"inclusions":["window.location.href"],
+	"inclusions":["window.location.href", "location.href"],
 	"inclusions_rule":"all",
 	"exclusions":null,
 	"exclusions_rule":null,
